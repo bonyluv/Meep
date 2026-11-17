@@ -1,3 +1,5 @@
+MEEP.2.html
+100 %
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>MEEP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -210,7 +212,6 @@ const MeepCore = (() => {
   // reemplazarse por los rangos que MEEP valide en laboratorio.
   const ALIMENTOS = {
     leche:      { nombre: 'Leche',      icono: 'leche',     rango: { min: 6.6, max: 6.8 }, validado: false },
-    queso:      { nombre: 'Queso',      icono: 'queso',     rango: { min: 5.2, max: 5.4 }, validado: false },
     yogur:      { nombre: 'Yogur',      icono: 'yogur',     rango: { min: 4.0, max: 4.5 }, validado: false },
   };
 
@@ -269,7 +270,6 @@ const ICON = {
   back: '<path d="M15 5l-7 7 7 7"/>',
   chev: '<path d="M9 5l7 7-7 7"/>',
   leche: '<path d="M8.5 3h7l1.5 4v14H7V7z"/><path d="M7 11h10"/>',
-  queso: '<path d="M3 18v-7l17-6v8z"/><path d="M3 18h17"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="11" r="1"/>',
   yogur: '<path d="M5 7h14l-2 14H7z"/><path d="M4 7h16"/><path d="M8 3.5h8"/>',
   sonda: '<path d="M12 3C9.5 7.5 6.5 10.5 6.5 14.5a5.5 5.5 0 0 0 11 0C17.5 10.5 14.5 7.5 12 3z"/><path d="M12 14.5v5"/>',
   trash: '<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/>',
@@ -316,8 +316,7 @@ function cargar() {
     const ahora = Date.now();
     return [
       { id: 'ejemplo-yogur', food: 'yogur', ph: 3.0, ts: ahora - 2 * 60 * 60 * 1000, estado: 'out', motivo: 'Ejemplo ficticio para mostrar una lectura fuera del rango esperado.', demo: true, ejemplo: true },
-      { id: 'ejemplo-leche', food: 'leche', ph: 6.7, ts: ahora - 26 * 60 * 60 * 1000, estado: 'in', motivo: 'Ejemplo ficticio para mostrar una lectura dentro del rango esperado.', demo: true, ejemplo: true },
-      { id: 'ejemplo-queso', food: 'queso', ph: 5.3, ts: ahora - 50 * 60 * 60 * 1000, estado: 'in', motivo: 'Ejemplo ficticio para mostrar una lectura dentro del rango esperado.', demo: true, ejemplo: true }
+      { id: 'ejemplo-leche', food: 'leche', ph: 6.7, ts: ahora - 26 * 60 * 60 * 1000, estado: 'in', motivo: 'Ejemplo ficticio para mostrar una lectura dentro del rango esperado.', demo: true, ejemplo: true }
     ];
   };
   try {
@@ -641,5 +640,4 @@ cargar();
 render();
 
 </script>
-
 </body></html>
