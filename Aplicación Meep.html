@@ -6,8 +6,8 @@ MEEP.2.html
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap">
 <style>
-/* Concepto: app móvil de una columna con cabecera azul petróleo, contenido en tarjetas y barra inferior de tres secciones.
-   Diseño único en tema claro (paleta de marca obligatoria). */
+
+/*colores y estructura*/
 :root {
   --verde: #2E7D32;
   --teal: #2A9D8F;
@@ -39,6 +39,7 @@ body {
   line-height: 1.45;
   margin: 0;
 }
+
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
 button:focus-visible, summary:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 
@@ -202,25 +203,22 @@ ol.pasos li::before { content: counter(p); flex: none; width: 26px; height: 26px
 </div>
 
 <script>
-/* =====================================================================
-   NÚCLEO MEEP (sin interfaz): rangos, interpretación y adaptadores de dispositivo
-   ===================================================================== */
 const MeepCore = (() => {
-  // IMPORTANTE: ningún rango está validado experimentalmente.
+    /*rangos*/
   // `rango: null` significa que el alimento aún no tiene referencia definida.
-  // Los valores presentes son referencias PROVISIONALES para demostración y deben
-  // reemplazarse por los rangos que MEEP valide en laboratorio.
   const ALIMENTOS = {
     leche:      { nombre: 'Leche',      icono: 'leche',     rango: { min: 6.6, max: 6.8 }, validado: false },
     yogur:      { nombre: 'Yogur',      icono: 'yogur',     rango: { min: 4.0, max: 4.5 }, validado: false },
   };
 
+  /*aproximar datos recibidos:*/
   const fmt = n => Number(n).toFixed(2).replace('.', ',');
+  /*si existe r muestra el rango, si no existe devuleve nulo:*/
   const fmtRango = r => r ? `${fmt(r.min)} – ${fmt(r.max)}` : null;
 
   // Devuelve { estado: 'in' | 'out' | 'na', motivo }
   function interpretar(clave, ph) {
-    const a = ALIMENTOS[clave];
+    const a = ALIMENTOS[clave]; /*clave es la categoria del alimento*/
     if (ph === null || ph === undefined || !Number.isFinite(ph) || ph < 0 || ph > 14)
       return { estado: 'na', motivo: 'La lectura llegó incompleta o fuera de la escala de pH (0 a 14).' };
     if (!a || !a.rango)
@@ -258,9 +256,7 @@ const MeepCore = (() => {
   return { ALIMENTOS, interpretar, fmt, fmtRango, BluetoothDevice, DemoDevice };
 })();
 
-/* =====================================================================
-   INTERFAZ
-   ===================================================================== */
+
 const ICON = {
   check: '<circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3L16.5 9"/>',
   warn: '<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5"/><path d="M12 17.3v.1"/>',
@@ -640,4 +636,5 @@ cargar();
 render();
 
 </script>
+
 </body></html>
