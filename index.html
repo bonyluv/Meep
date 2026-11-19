@@ -8,10 +8,8 @@
   <link rel="manifest" href="manifest.json">
   <style>
     :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#263238;background:#e8e9e1;--navy:#17324d;--teal:#2a9d8f;--line:#dde2dc;--muted:#55656d;--red:#a32020}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:18px}.card{width:min(420px,100%);overflow:hidden;background:#f7f7f2;border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 40px #17324d20}
-    header{padding:28px 22px;text-align:center;background:var(--navy);color:white}header strong{letter-spacing:.18em}h1{font-size:27px;margin:9px 0 2px}header p{margin:0;opacity:.82}main{padding:22px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}.tabs button,button,input{font:inherit}.tabs button{padding:11px;border:0;border-radius:12px;background:white;color:var(--muted);font-weight:750;cursor:pointer}.tabs button[aria-selected=true]{background:#e0f1ef;color:var(--navy)}form{display:grid;gap:13px}label{display:grid;gap:6px;font-size:14px;font-weight:750}input{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:white}input:focus{outline:3px solid #2a9d8f55;border-color:var(--teal)}.primary{min-height:50px;border:0;border-radius:13px;background:var(--navy);color:white;font-weight:800;cursor:pointer}.primary:disabled{opacity:.6;cursor:wait}.error,.notice{display:none;margin:0 0 13px;padding:11px 12px;border-radius:11px;font-size:14px}.error.show{display:block;color:var(--red);background:#fae8e8}.notice.show{display:block;color:var(--navy);background:#e0f1ef}.hint{margin:16px 0 0;color:var(--muted);font-size:13px;text-align:center} [hidden]{display:none!important}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:18px}.card{width:min(420px,100%);overflow:hidden;background:#f7f7f2;border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 40px #17324d1c}header{padding:28px 22px;text-align:center;background:var(--navy);color:white}header strong{letter-spacing:.18em}h1{font-size:27px;margin:9px 0 2px}header p{margin:0;opacity:.82}main{padding:22px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}.tabs button{padding:11px 8px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--navy);font:inherit;font-weight:700;cursor:pointer}.tabs button[aria-selected="true"]{background:var(--navy);color:white;border-color:var(--navy)}form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:650}input{width:100%;padding:12px;border:1px solid #bdc8c3;border-radius:10px;font:inherit}input:focus{outline:3px solid #2a9d8f55;border-color:var(--teal)}.primary{min-height:48px;padding:12px;border:0;border-radius:12px;background:var(--teal);color:white;font:inherit;font-weight:750;cursor:pointer}.primary:disabled{opacity:.6;cursor:wait}.error,.notice{display:none;margin:0 0 14px;padding:11px 12px;border-radius:10px;overflow-wrap:anywhere}.error.show{display:block;color:var(--red);background:#fae8e8}.notice.show{display:block;color:#17324d;background:#e0f1ef}.hint{margin:16px 0 0;color:var(--muted);font-size:14px;line-height:1.5}[hidden]{display:none!important}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <section class="card" aria-label="Acceso a MEEP">
@@ -28,59 +26,110 @@
         <label>Contraseña<input id="password" type="password" autocomplete="current-password" minlength="6" required></label>
         <button class="primary" id="submit" type="submit">Ingresar</button>
       </form>
-      <p class="hint">Tu cuenta se autentica con Supabase. Si es tu primer acceso, crea una cuenta.</p>
+      <p class="hint" id="hint">Conectando con el servicio de acceso…</p>
     </main>
   </section>
   <script>
-    // La publishable key es pública por diseño. La seguridad depende de Auth y las políticas RLS.
-    const SUPABASE_URL = 'https://zllblgptrobzpxfoksvb.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_w9drjwojGLrBmIyXd7d4vA_4wfqU40I';
-    const APP_URL = './Aplicaci%C3%B3n%20Meep.html';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    });
-    let mode = 'login';
-    const $ = id => document.getElementById(id);
-    function message(kind, text) { $('error').classList.remove('show'); $('notice').classList.remove('show'); $(kind).textContent = text; $(kind).classList.add('show'); }
-    function setMode(next) {
-      mode = next;
-      $('error').classList.remove('show'); $('notice').classList.remove('show');
-      const registering = mode === 'register';
-      $('loginTab').setAttribute('aria-selected', String(!registering));
-      $('registerTab').setAttribute('aria-selected', String(registering));
-      $('title').textContent = registering ? 'Crear cuenta' : 'Iniciar sesión';
-      $('subtitle').textContent = registering ? 'Regístrate para acceder a MEEP' : 'Accede a tu medidor de pH';
-      $('nameField').hidden = !registering;
-      $('name').required = registering;
-      $('password').autocomplete = registering ? 'new-password' : 'current-password';
-      $('submit').textContent = registering ? 'Crear cuenta' : 'Ingresar';
-    }
-    $('loginTab').addEventListener('click', () => setMode('login'));
-    $('registerTab').addEventListener('click', () => setMode('register'));
-    $('authForm').addEventListener('submit', async event => {
-      event.preventDefault();
-      $('error').classList.remove('show'); $('notice').classList.remove('show');
-      const button = $('submit'); button.disabled = true;
-      const email = $('email').value.trim().toLowerCase();
-      const password = $('password').value;
-      let result;
-      try {
-        if (mode === 'register') {
-          result = await supabase.auth.signUp({ email, password, options: { data: { name: $('name').value.trim() } } });
-          if (!result.error && result.data.session) { location.replace(APP_URL); return; }
-          if (!result.error) { message('notice', 'Cuenta creada. Revisa tu correo para confirmar la dirección y luego inicia sesión.'); return; }
-        } else {
-          result = await supabase.auth.signInWithPassword({ email, password });
-          if (!result.error) { location.replace(APP_URL); return; }
+    (() => {
+      'use strict';
+      const SUPABASE_URL = 'https://zllblgptrobzpxfoksvb.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_w9drjwojGLrBmIyXd7d4vA_4wfqU40I';
+      const APP_URL = './Aplicaci%C3%B3n%20Meep.html';
+      const $ = id => document.getElementById(id);
+      let mode = 'login';
+      let client = null;
+
+      function message(kind, text) {
+        $('error').classList.remove('show');
+        $('notice').classList.remove('show');
+        $(kind).textContent = text;
+        $(kind).classList.add('show');
+      }
+      function setMode(next) {
+        mode = next;
+        $('error').classList.remove('show');
+        $('notice').classList.remove('show');
+        const registering = mode === 'register';
+        $('loginTab').setAttribute('aria-selected', String(!registering));
+        $('registerTab').setAttribute('aria-selected', String(registering));
+        $('title').textContent = registering ? 'Crear cuenta' : 'Iniciar sesión';
+        $('subtitle').textContent = registering ? 'Regístrate para acceder a MEEP' : 'Accede a tu medidor de pH';
+        $('nameField').hidden = !registering;
+        $('name').required = registering;
+        $('password').autocomplete = registering ? 'new-password' : 'current-password';
+        $('submit').textContent = registering ? 'Crear cuenta' : 'Ingresar';
+      }
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.async = true;
+          script.onload = () => resolve();
+          script.onerror = () => { script.remove(); reject(new Error('No se pudo cargar ' + src)); };
+          document.head.appendChild(script);
+        });
+      }
+      async function initializeAuth() {
+        const cdns = [
+          'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+          'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+        ];
+        let lastError;
+        for (const cdn of cdns) {
+          try {
+            if (!window.supabase) await loadScript(cdn);
+            if (!window.supabase || typeof window.supabase.createClient !== 'function') throw new Error('La librería de acceso no está disponible.');
+            client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+              auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+            });
+            $('hint').textContent = 'Tu cuenta se autentica de forma segura con Supabase.';
+            const { data, error } = await client.auth.getSession();
+            if (!error && data.session) location.replace(APP_URL);
+            return;
+          } catch (error) { lastError = error; }
         }
-        message('error', result.error?.message || 'No se pudo completar el acceso.');
-      } catch (error) {
-        message('error', 'No se pudo conectar con Supabase. Verifica tu conexión y vuelve a intentarlo.');
-      } finally { button.disabled = false; }
-    });
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (!error && data.session) location.replace(APP_URL);
-    }).catch(() => {});
+        $('hint').textContent = 'No se pudo conectar el servicio de acceso. Revisa tu conexión e inténtalo de nuevo.';
+        message('error', 'No cargó el servicio de inicio de sesión. Recarga la página o prueba otra conexión.');
+        console.error('Error al iniciar el acceso de MEEP:', lastError);
+      }
+
+      $('loginTab').addEventListener('click', () => setMode('login'));
+      $('registerTab').addEventListener('click', () => setMode('register'));
+      $('authForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        $('error').classList.remove('show');
+        $('notice').classList.remove('show');
+        if (!client) {
+          message('error', 'El servicio de acceso aún no está disponible. Recarga la página e inténtalo de nuevo.');
+          return;
+        }
+        const button = $('submit');
+        button.disabled = true;
+        const email = $('email').value.trim().toLowerCase();
+        const password = $('password').value;
+        try {
+          let result;
+          if (mode === 'register') {
+            result = await client.auth.signUp({ email, password, options: { data: { name: $('name').value.trim() } } });
+            if (!result.error && result.data.session) { location.replace(APP_URL); return; }
+            if (!result.error) { message('notice', 'Cuenta creada. Revisa tu correo para confirmar la dirección y luego inicia sesión.'); return; }
+          } else {
+            result = await client.auth.signInWithPassword({ email, password });
+            if (!result.error) { location.replace(APP_URL); return; }
+          }
+          message('error', result.error?.message || 'No se pudo completar el acceso.');
+        } catch (error) {
+          console.error('Error de autenticación:', error);
+          message('error', 'No se pudo conectar. Verifica tu conexión y vuelve a intentarlo.');
+        } finally { button.disabled = false; }
+      });
+
+      // Retira el worker antiguo de esta app para que no sirva una copia desactualizada.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => registrations.forEach(registration => registration.unregister())).catch(() => {});
+      }
+      initializeAuth();
+    })();
   </script>
 </body>
 </html>
